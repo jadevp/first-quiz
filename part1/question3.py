@@ -44,20 +44,30 @@ class Oven:
     def wait(self):
         pass
 
-    def get_output(self):
-        if self.temperature < 0 and set(self.ingredients) == set(["water", "air"]):
-            return "snow"
-        elif self.temperature >= 100 and set(self.ingredients) == set(["lead", "mercury"]):
-            return "gold"
-        elif self.temperature >= 100 and set(self.ingredients) == set(["cheese", "dough", "tomato"]):
-            return "pizza"
+class RecipeBook:
+    def __init__(self):
+        self.recipes = {
+            (frozenset(["water", "air"]), -100): "snow",
+            (frozenset(["lead", "mercury"]), 100): "gold",
+            (frozenset(["cheese", "dough", "tomato"]), 100): "pizza",
+            # Agrega aquí más recetas...
+        }
+
+    def get_output(self, ingredients, temperature):
+        recipe_key = (frozenset(ingredients), temperature)
+        if recipe_key in self.recipes:
+            return self.recipes[recipe_key]
         else:
-            return None
+            raise ValueError("No se encontró ninguna receta que coincida con los ingredientes y la temperatura proporcionados.")
+
 def make_oven():
     return Oven()
 
+def make_recipe_book():
+    return RecipeBook()
+
 # Esta función usa el horno que le pasamos como parámetro
-def alchemy_combine(oven, ingredients, temperature):
+def alchemy_combine(oven, recipe_book, ingredients, temperature):
 
     for item in ingredients:
         oven.add(item)
@@ -69,4 +79,4 @@ def alchemy_combine(oven, ingredients, temperature):
     else:
         oven.wait()
 
-    return oven.get_output()
+    return recipe_book.get_output(oven.ingredients, oven.temperature)
